@@ -1,0 +1,32 @@
+{% extends "layout.html" %}
+
+{% block title %}Сообщения{% endblock %}
+
+{% block content %}
+    <h1>Сообщения из контактной формы</h1>
+    
+    {% if messages %}
+        <table border="1" style="width:100%; border-collapse: collapse;">
+            <tr>
+                <th>ID</th>
+                <th>Имя</th>
+                <th>Email</th>
+                <th>Сообщение</th>
+                <th>Дата</th>
+            </tr>
+            {% for msg in messages %}
+            <tr>
+                <td>{{ msg.id }}</td>
+                <td>{{ msg.name }}</td>
+                <td>{{ msg.email }}</td>
+                <td>{{ msg.message }}</td>
+                <td>{{ msg.created_at }}</td>
+            </tr>
+            {% endfor %}
+        </table>
+    {% else %}
+        <p>Пока нет сообщений</p>
+    {% endif %}
+    
+    <p><a href="/">На главную</a></p>
+{% endblock %}
