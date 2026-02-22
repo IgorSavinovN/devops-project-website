@@ -2,6 +2,8 @@ from flask import Flask, render_template, request
 import datetime
 import os
 import calendar
+from models import init_db, save_message, get_all_messages, get_messages_count
+init_db()
 app = Flask(__name__)
 
 # Домашняя страница
@@ -28,15 +30,21 @@ def system_info():
     }
     return render_template('system.html', info=info)
 
+
 @app.route('/contact', methods=['GET', 'POST'])
 def contact():
     if request.method == 'POST':
         name = request.form.get('name', '')
         email = request.form.get('email', '')
         message = request.form.get('message', '')
-        # Здесь мы могли бы отправить email или сохранить в БД
-        return f"Спасибо, {name}! Мы получили ваше сообщение."
-    return render_template('contact.html')
+        
+        # Сохраняем в базу данных
+        from models import save_message
+        message_id = save_message(name, email, message)
+        
+        return f"Спасибо, {name}! Мы получили ваше сообщение (ID: {message_id})"
+    return render_template('contact.html')       
+
 
 
 # Календарь

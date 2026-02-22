@@ -63,3 +63,16 @@ def get_all_messages():
     conn.close()
     
     return messages
+def get_messages_count():
+    """Получить количество сообщений"""
+    conn = get_db_connection()
+    cur = conn.cursor()
+    
+    cur.execute("SELECT COUNT(*) as count FROM messages")
+    result = cur.fetchone()
+    count = result['count'] if result else 0
+    
+    cur.close()
+    conn.close()
+    
+    return count
