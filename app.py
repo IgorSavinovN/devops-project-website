@@ -43,9 +43,14 @@ def contact():
         message_id = save_message(name, email, message)
         
         return f"Спасибо, {name}! Мы получили ваше сообщение (ID: {message_id})"
-    return render_template('contact.html')       
+    return render_template('contact.html')
 
-
+# Страница со списком сообщений (админка)
+@app.route('/admin/messages')
+def admin_messages():
+    from models import get_all_messages
+    messages = get_all_messages()
+    return render_template('messages.html', messages=messages)
 
 # Календарь
 @app.route('/calendar.html')
