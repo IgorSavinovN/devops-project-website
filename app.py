@@ -28,6 +28,17 @@ def system_info():
     }
     return render_template('system.html', info=info)
 
+@app.route('/contact', methods=['GET', 'POST'])
+def contact():
+    if request.method == 'POST':
+        name = request.form.get('name', '')
+        email = request.form.get('email', '')
+        message = request.form.get('message', '')
+        # Здесь мы могли бы отправить email или сохранить в БД
+        return f"Спасибо, {name}! Мы получили ваше сообщение."
+    return render_template('contact.html')
+
+
 # Календарь
 @app.route('/calendar.html')
 def calendar_page():
