@@ -1,0 +1,17 @@
+services:
+  - type: web
+    name: igor-flask-app
+    runtime: python
+    buildCommand: pip install -r requirements.txt
+    startCommand: gunicorn app:app
+    envVars:
+      - key: DATABASE_URL
+        fromDatabase:
+          name: igor-postgres
+          property: connectionString
+
+databases:
+  - name: igor-postgres
+    databaseName: myapp
+    user: igor_user
+    plan: free
