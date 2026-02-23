@@ -4,7 +4,7 @@ import os
 import calendar
 from models import init_db, save_message, get_all_messages, get_messages_count
 init_db()
-app = Flask(__name__)
+app = Flask(__name__, template_folder='templates')
 
 # Домашняя страница
 @app.route('/')
