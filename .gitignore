@@ -27,3 +27,4 @@ Thumbs.db
 # Конфиги с секретами (позже сюда добавим .env)
 .env
 config.local.py
+.vercel
