@@ -1,0 +1,18 @@
+{% extends "layout.html" %}
+
+{% block title %}Главная{% endblock %}
+
+{% block content %}
+    <h1>{{ message }}</h1>
+    <p>Текущее время на сервере: {{ time }}</p>
+    
+    <h2>Наш план обучения:</h2>
+    <ol>
+        <li>✅ Linux основы</li>
+        <li>✅ Python приложение</li>
+        <li>⬜ Git и GitHub</li>
+        <li>⬜ Docker контейнеризация</li>
+        <li>⬜ CI/CD автоматизация</li>
+        <li>⬜ Базы данных</li>
+    </ol>
+{% endblock %}
