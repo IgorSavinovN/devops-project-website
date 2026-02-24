@@ -43,6 +43,12 @@ def contact():
         return f"Спасибо, {name}! Мы получили ваше сообщение (ID: {message_id})"
     return render_template('contact.html')
 
+@app.route('/calendar')
+@app.route('/calendar.html')
+def calendar():
+    return render_template('calendar.html')
+
+
 @app.route('/admin/messages')
 def admin_messages():
     messages = get_all_messages()
