@@ -1,0 +1,76 @@
+---
+- name: Setup local development environment
+  hosts: local
+  become: no  # не требуем root
+  vars:
+    project_dir: "/home/igor/devops-project/website"
+    repo_url: "https://github.com/IgorSavinovN/devops-project-website.git"
+
+  tasks:
+    - name: Ensure project directory exists
+      file:
+        path: "{{ project_dir }}"
+        state: directory
+        mode: '0755'
+
+    - name: Clone or update repository
+      git:
+        repo: "{{ repo_url }}"
+        dest: "{{ project_dir }}"
+        version: main
+        update: yes
+      register: git_result
+
+    - name: Show git status
+      debug:
+        msg: "Repository updated: {{ git_result.changed }}"
+
+    - name: Check if virtual environment exists
+      stat:
+        path: "{{ project_dir }}/venv"
+      register: venv_stat
+
+    - name: Create virtual environment if not exists
+      command:
+        cmd: python3 -m venv venv
+        chdir: "{{ project_dir }}"
+      when: not venv_stat.stat.exists
+
+    - name: Install requirements
+      pip:
+        requirements: "{{ project_dir }}/requirements.txt"
+        virtualenv: "{{ project_dir }}/venv"
+        virtualenv_python: python3
+
+    - name: Check if app is running
+      shell: "ps aux | grep 'python app.py' | grep -v grep"
+      register: app_status
+      ignore_errors: yes
+
+    - name: Show app status
+      debug:
+        msg: "App is {{ 'running' if app_status.rc == 0 else 'not running' }}"
+
+    - name: Start app if not running
+      shell:
+        cmd: |
+          cd {{ project_dir }}
+          source venv/bin/activate
+          nohup python app.py > app.log 2>&1 &
+        executable: /bin/bash
+      when: app_status.rc != 0
+      async: 10
+      poll: 0
+      register: app_start
+
+    - name: Wait a bit for app to start
+      pause:
+        seconds: 3
+
+    - name: Check if app started
+      shell: "ps aux | grep 'python app.py' | grep -v grep"
+      register: app_check
+
+    - name: Final status
+      debug:
+        msg: "App started successfully with PID: {{ app_check.stdout.split()[1] if app_check.rc == 0 else 'Failed to start' }}"
