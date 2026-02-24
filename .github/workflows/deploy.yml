@@ -1,0 +1,17 @@
+name: Deploy to PythonAnywhere
+
+on:
+  push:
+    branches: [ main ]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Trigger PythonAnywhere deploy
+      env:
+        TOKEN: ${{ secrets.PYTHONANYWHERE_TOKEN }}
+      run: |
+        curl -H "Authorization: Token $TOKEN" \
+             https://www.pythonanywhere.com/api/v0/user/Igorsavinov/webapps/Igorsavinov.pythonanywhere.com/reload/
