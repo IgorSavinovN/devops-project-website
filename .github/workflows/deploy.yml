@@ -1,4 +1,4 @@
-name: Deploy to PythonAnywhere
+name: Deploy to Server
 
 on:
   push:
@@ -7,11 +7,19 @@ on:
 jobs:
   deploy:
     runs-on: ubuntu-latest
-    
     steps:
-    - name: Trigger PythonAnywhere deploy
-      env:
-        TOKEN: ${{ secrets.PYTHONANYWHERE_TOKEN }}
-      run: |
-        curl -H "Authorization: Token $TOKEN" \
-             https://www.pythonanywhere.com/api/v0/user/Igorsavinov/webapps/Igorsavinov.pythonanywhere.com/reload/
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Deploy via SSH
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.REMOTE_HOST }}
+          username: ${{ secrets.REMOTE_USER }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          script: |
+            cd /home/igor/devops-project-website
+            git pull origin main
+            source venv/bin/activate
+            pip install -r requirements.txt
+            sudo systemctl restart flask-app
