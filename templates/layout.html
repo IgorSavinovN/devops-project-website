@@ -7,36 +7,105 @@
     <style>
         body {
             font-family: Arial, sans-serif;
-            margin: 40px;
+            margin: 0;
+            padding: 0;
             line-height: 1.6;
             background-color: #f4f4f4;
         }
         .container {
-            max-width: 800px;
+            max-width: 900px;
             margin: auto;
             background: white;
             padding: 20px;
-            border-radius: 5px;
-            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            border-radius: 8px;
+            box-shadow: 0 0 15px rgba(0,0,0,0.1);
         }
         .nav {
+            display: flex;
+            gap: 10px;
             background: #333;
-            color: white;
             padding: 10px;
-            margin-bottom: 20px;
             border-radius: 5px;
         }
         .nav a {
             color: white;
             text-decoration: none;
-            padding: 10px;
+            padding: 8px 12px;
+            border-radius: 5px;
         }
         .nav a:hover {
             background: #555;
         }
+        h1, h2 {
+            color: #333;
+        }
+        button {
+            padding: 10px 20px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        input, textarea, select {
+            width: 100%;
+            padding: 8px;
+            margin: 5px 0 15px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 15px 0;
+        }
+        table, th, td {
+            border: 1px solid #ddd;
+        }
+        th, td {
+            padding: 10px;
+            text-align: left;
+        }
+        th {
+            background-color: #f4f4f4;
+        }
+        .timer-box {
+            background-color: #f0f8ff;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+        }
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1;
+            left: 0; top: 0;
+            width: 100%; height: 100%;
+            background-color: rgba(0,0,0,0.4);
+        }
+        .modal-content {
+            background-color: #fefefe;
+            margin: 15% auto;
+            padding: 20px;
+            border-radius: 10px;
+            width: 300px;
+            text-align: center;
+            position: relative;
+        }
+        .modal-content span {
+            position: absolute;
+            top: 5px;
+            right: 10px;
+            font-size: 28px;
+            cursor: pointer;
+            color: #aaa;
+        }
         .footer {
             text-align: center;
-            margin-top: 20px;
+            margin: 20px 0 0;
             color: #666;
         }
     </style>
@@ -47,12 +116,12 @@
             <a href="/">Главная</a>
             <a href="/about">О нас</a>
             <a href="/system">Система</a>
-	        <a href="/contact">Контакты</a>
+            <a href="/contact">Контакты</a>
             <a href="/calendar.html">Календарь</a>
         </div>
-        
+
         {% block content %}{% endblock %}
-        
+
         <div class="footer">
             <p>Сервер работает на Linux. Учим DevOps вместе!</p>
         </div>

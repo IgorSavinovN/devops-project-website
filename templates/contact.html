@@ -3,28 +3,20 @@
 {% block title %}Контакты{% endblock %}
 
 {% block content %}
-    <h1>Свяжитесь с нами</h1>
-    
-    <form method="post" action="/contact">
-        <div style="margin-bottom: 10px;">
-            <label>Имя:<br>
-                <input type="text" name="name" required style="width: 100%; padding: 5px;">
-            </label>
-        </div>
-        <div style="margin-bottom: 10px;">
-            <label>Email:<br>
-                <input type="email" name="email" required style="width: 100%; padding: 5px;">
-            </label>
-        </div>
-        <div style="margin-bottom: 10px;">
-            <label>Сообщение:<br>
-                <textarea name="message" rows="5" required style="width: 100%; padding: 5px;"></textarea>
-            </label>
-        </div>
-        <button type="submit" style="padding: 10px 20px; background-color: #4CAF50; color: white; border: none; border-radius: 5px;">Отправить</button>
-    </form>
-    
-    <p style="margin-top: 20px;">
-        <a href="/">Вернуться на главную</a>
-    </p>
+<h1>Свяжитесь с нами</h1>
+
+<form method="post" action="/contact">
+    <label>Имя:
+        <input type="text" name="name" required>
+    </label>
+    <label>Email:
+        <input type="email" name="email" required>
+    </label>
+    <label>Сообщение:
+        <textarea name="message" rows="5" required></textarea>
+    </label>
+    <button type="submit">Отправить</button>
+</form>
+
+<p><a href="/">Вернуться на главную</a></p>
 {% endblock %}

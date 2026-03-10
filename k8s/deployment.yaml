@@ -1,0 +1,24 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: flask-app
+  labels:
+    app: flask
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: flask
+  template:
+    metadata:
+      labels:
+        app: flask
+    spec:
+      containers:
+      - name: flask
+        image: igorsavinon/flask-app:latest
+        ports:
+        - containerPort: 5000
+        env:
+        - name: DATABASE_URL
+          value: "sqlite:///data.db"  # используем SQLite, чтобы не зависеть от внешней БД
