@@ -1,34 +1,32 @@
 {% extends "layout.html" %}
 
-{% block title %}Информация о системе{% endblock %}
+{% block title %}Сообщения{% endblock %}
 
 {% block content %}
-    <h1>Информация о сервере</h1>
-    
-    <table border="1" style="width:100%; border-collapse: collapse;">
-        <tr>
-            <th style="padding: 10px;">Параметр</th>
-            <th style="padding: 10px;">Значение</th>
-        </tr>
-        <tr>
-            <td>Hostname</td>
-            <td>{{ info.hostname }}</td>
-        </tr>
-        <tr>
-            <td>Операционная система</td>
-            <td>{{ info.os }}</td>
-        </tr>
-        <tr>
-            <td>Python версия</td>
-            <td>{{ info.python_version }}</td>
-        </tr>
-        <tr>
-            <td>Текущая директория</td>
-            <td>{{ info.current_dir }}</td>
-        </tr>
-        <tr>
-            <td>Пользователь</td>
-            <td>{{ info.user }}</td>
-        </tr>
-    </table>
+<h1>Сообщения из контактной формы</h1>
+
+{% if messages %}
+<table>
+    <tr>
+        <th>ID</th>
+        <th>Имя</th>
+        <th>Email</th>
+        <th>Сообщение</th>
+        <th>Дата</th>
+    </tr>
+    {% for msg in messages %}
+    <tr>
+        <td>{{ msg.id }}</td>
+        <td>{{ msg.name }}</td>
+        <td>{{ msg.email }}</td>
+        <td>{{ msg.message }}</td>
+        <td>{{ msg.created_at }}</td>
+    </tr>
+    {% endfor %}
+</table>
+{% else %}
+<p>Пока нет сообщений</p>
+{% endif %}
+
+<p><a href="/">На главную</a></p>
 {% endblock %}

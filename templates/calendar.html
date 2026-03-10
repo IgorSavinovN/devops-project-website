@@ -3,106 +3,78 @@
 {% block title %}Календарь и таймер{% endblock %}
 
 {% block content %}
-    <h1>Календарь и таймер</h1>
+<h1>Календарь и таймер</h1>
 
-    <div style="background-color: #f0f8ff; padding: 20px; border-radius: 10px; margin-bottom: 20px;">
-        <h3>Выберите дату и время</h3>
+<div class="timer-box">
+    <h3>Выберите дату и время</h3>
+    <label>Дата:
+        <input type="date" id="datePicker">
+    </label>
+    <label>Время:
+        <input type="time" id="timePicker">
+    </label>
+    <button onclick="startTimer()">Запустить таймер</button>
+</div>
 
-        <div style="margin-bottom: 15px;">
-            <label><strong>Дата:</strong></label><br>
-            <input type="date" id="datePicker" style="padding: 8px; width: 200px;">
-        </div>
+<div id="timerDisplay" style="font-size: 24px; font-weight: bold; margin: 20px 0;"></div>
 
-        <div style="margin-bottom: 15px;">
-            <label><strong>Время:</strong></label><br>
-            <input type="time" id="timePicker" style="padding: 8px; width: 200px;">
-        </div>
-
-        <button onclick="startTimer()" style="padding: 10px 20px; background-color: #4CAF50; color: white; border: none; border-radius: 5px; cursor: pointer;">
-            Запустить таймер
-        </button>
+<div id="myModal" class="modal">
+    <div class="modal-content">
+        <span onclick="closeModal()">&times;</span>
+        <h3>⏰ Таймер сработал!</h3>
+        <p id="modalMessage">Выбранное время наступило</p>
+        <button onclick="closeModal()">OK</button>
     </div>
+</div>
 
-    <div id="timerDisplay" style="font-size: 24px; font-weight: bold; margin: 20px 0;"></div>
+<script>
+let timerInterval;
 
-    <!-- Модальное окно (всплывашка) -->
-    <div id="myModal" style="display: none; position: fixed; z-index: 1; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.4);">
-        <div style="background-color: #fefefe; margin: 15% auto; padding: 20px; border: 1px solid #888; width: 300px; border-radius: 10px; text-align: center;">
-            <span onclick="closeModal()" style="color: #aaa; float: right; font-size: 28px; font-weight: bold; cursor: pointer;">&times;</span>
-            <h3>⏰ Таймер сработал!</h3>
-            <p id="modalMessage">Выбранное время наступило</p>
-            <button onclick="closeModal()" style="padding: 8px 16px; background-color: #4CAF50; color: white; border: none; border-radius: 5px; cursor: pointer;">OK</button>
-        </div>
-    </div>
+function startTimer() {
+    const date = document.getElementById('datePicker').value;
+    const time = document.getElementById('timePicker').value;
 
-    <script>
-        let timerInterval;
+    if (!date || !time) { alert('Пожалуйста, выберите дату и время'); return; }
 
-        function startTimer() {
-            const date = document.getElementById('datePicker').value;
-            const time = document.getElementById('timePicker').value;
+    const selectedDateTime = new Date(date + 'T' + time);
+    const now = new Date();
 
-            if (!date || !time) {
-                alert('Пожалуйста, выберите дату и время');
-                return;
-            }
+    if (selectedDateTime <= now) { alert('Пожалуйста, выберите будущее время'); return; }
 
-            const selectedDateTime = new Date(date + 'T' + time);
-            const now = new Date();
+    const timeDiff = selectedDateTime - now;
+    const hours = Math.floor(timeDiff / (1000 * 60 * 60));
+    const minutes = Math.floor((timeDiff % (1000 * 60 * 60)) / (1000 * 60));
+    const seconds = Math.floor((timeDiff % (1000 * 60)) / 1000);
 
-            if (selectedDateTime <= now) {
-                alert('Пожалуйста, выберите будущее время');
-                return;
-            }
+    document.getElementById('timerDisplay').innerHTML =
+        `Таймер запущен до ${selectedDateTime.toLocaleString()}<br>` +
+        `Осталось: ${hours}ч ${minutes}м ${seconds}с`;
 
-            const timeDiff = selectedDateTime - now;
-            const hours = Math.floor(timeDiff / (1000 * 60 * 60));
-            const minutes = Math.floor((timeDiff % (1000 * 60 * 60)) / (1000 * 60));
-            const seconds = Math.floor((timeDiff % (1000 * 60)) / 1000);
+    if (timerInterval) clearInterval(timerInterval);
 
-            document.getElementById('timerDisplay').innerHTML =
-                `Таймер запущен до ${selectedDateTime.toLocaleString()}<br>` +
-                `Осталось: ${hours}ч ${minutes}м ${seconds}с`;
+    timerInterval = setInterval(() => {
+        const now = new Date();
+        const remaining = selectedDateTime - now;
 
-            // Очищаем предыдущий таймер если был
-            if (timerInterval) clearInterval(timerInterval);
-
-            // Запускаем обратный отсчет
-            timerInterval = setInterval(() => {
-                const now = new Date();
-                const remaining = selectedDateTime - now;
-
-                if (remaining <= 0) {
-                    clearInterval(timerInterval);
-                    document.getElementById('timerDisplay').innerHTML = '';
-                    showModal();
-                    return;
-                }
-
-                const hours = Math.floor(remaining / (1000 * 60 * 60));
-                const minutes = Math.floor((remaining % (1000 * 60 * 60)) / (1000 * 60));
-                const seconds = Math.floor((remaining % (1000 * 60)) / 1000);
-
-                document.getElementById('timerDisplay').innerHTML =
-                    `Таймер запущен до ${selectedDateTime.toLocaleString()}<br>` +
-                    `Осталось: ${hours}ч ${minutes}м ${seconds}с`;
-            }, 1000);
+        if (remaining <= 0) {
+            clearInterval(timerInterval);
+            document.getElementById('timerDisplay').innerHTML = '';
+            showModal();
+            return;
         }
 
-        function showModal() {
-            document.getElementById('myModal').style.display = 'block';
-        }
+        const hours = Math.floor(remaining / (1000 * 60 * 60));
+        const minutes = Math.floor((remaining % (1000 * 60 * 60)) / (1000 * 60));
+        const seconds = Math.floor((remaining % (1000 * 60)) / 1000);
 
-        function closeModal() {
-            document.getElementById('myModal').style.display = 'none';
-        }
+        document.getElementById('timerDisplay').innerHTML =
+            `Таймер запущен до ${selectedDateTime.toLocaleString()}<br>` +
+            `Осталось: ${hours}ч ${minutes}м ${seconds}с`;
+    }, 1000);
+}
 
-        // Закрытие по клику вне модального окна
-        window.onclick = function(event) {
-            const modal = document.getElementById('myModal');
-            if (event.target == modal) {
-                modal.style.display = 'none';
-            }
-        }
-    </script>
+function showModal() { document.getElementById('myModal').style.display = 'block'; }
+function closeModal() { document.getElementById('myModal').style.display = 'none'; }
+window.onclick = function(event) { if(event.target==document.getElementById('myModal')) closeModal(); }
+</script>
 {% endblock %}
