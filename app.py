@@ -36,7 +36,7 @@ class Setting(db.Model):
     value = db.Column(db.String(200))
 
 # Админка
-admin = Admin(app, name='DevOps Admin', template_mode='bootstrap4')
+admin = Admin(app, name='DevOps Admin')
 admin.add_view(ModelView(Project, db.session))
 admin.add_view(ModelView(Visit, db.session))
 admin.add_view(ModelView(Setting, db.session))
