@@ -1,6 +1,7 @@
-from flask import Flask, render_template
+from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from flask_admin import Admin
+from flask_admin.contrib.sqla import ModelView  # ← ЭТО БЫЛО ПОТЕРЯНО
 from models import db, Project, Visit, Setting
 from routes import init_routes
 import os
