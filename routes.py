@@ -14,7 +14,6 @@ try:
 except Exception as e:
     logger.error(f"❌ Kafka producer failed: {e}")
     producer = None
-
 from flask import render_template, request, redirect, url_for, flash, jsonify
 from datetime import datetime, timedelta
 
