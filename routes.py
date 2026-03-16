@@ -1,3 +1,20 @@
+from kafka import KafkaProducer
+import json
+import logging
+
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
+
+try:
+    producer = KafkaProducer(
+        bootstrap_servers='155.212.165.190:9092',
+        value_serializer=lambda v: json.dumps(v).encode('utf-8')
+    )
+    logger.info("✅ Kafka producer connected")
+except Exception as e:
+    logger.error(f"❌ Kafka producer failed: {e}")
+    producer = None
+
 from flask import render_template, request, redirect, url_for, flash, jsonify
 from datetime import datetime, timedelta
 
@@ -101,3 +118,24 @@ def init_routes(app, db, Project, Visit, Setting):
         db.session.commit()
         flash('Проект удалён', 'success')
         return redirect(url_for('projects'))
+
+    @app.route('/send-event')
+    def send_event():
+        if not producer:
+            return "Kafka producer not available", 500
+
+        event = {
+            'event_type': 'page_view',
+            'page': request.referrer or 'direct',
+            'user_ip': request.remote_addr,
+            'timestamp': str(datetime.utcnow())
+        }
+
+        try:
+            future = producer.send('devops-events', value=event)
+            result = future.get(timeout=10)
+            logger.info(f"✅ Event sent: {event}")
+            return f"Event sent: {event}"
+        except Exception as e:
+            logger.error(f"❌ Failed: {e}")
+            return f"Error: {e}", 500
