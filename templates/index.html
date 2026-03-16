@@ -1,7 +1,27 @@
 {% extends "base.html" %}
 
+{% block title %}Главная — DevOps Project{% endblock %}
+
 {% block content %}
-<h1>🚀 DevOps Project</h1>
-<p>Этот сайт — учебный проект для DevOps-инженеров.</p>
-<p>Здесь есть база данных, админка, CI/CD и мониторинг.</p>
+<h1>⚡ DevOps Project Dashboard</h1>
+
+<div class="card-grid">
+    <div class="card">
+        <h2 style="margin-bottom: 1rem;">📋 Проекты</h2>
+        <p style="color: #64748b;">Управляй задачами, отслеживай статус, добавляй новые.</p>
+        <a href="/projects" style="display: inline-block; margin-top: 1rem; color: #3b82f6;">Перейти →</a>
+    </div>
+
+    <div class="card">
+        <h2 style="margin-bottom: 1rem;">📊 Мониторинг</h2>
+        <p style="color: #64748b;">Графики CPU, RAM, диска, сети — всё в реальном времени.</p>
+        <a href="/stats" style="display: inline-block; margin-top: 1rem; color: #3b82f6;">Перейти →</a>
+    </div>
+
+    <div class="card">
+        <h2 style="margin-bottom: 1rem;">🔌 Системы</h2>
+        <p style="color: #64748b;">Статус PostgreSQL, Kafka и других сервисов.</p>
+        <a href="/status" style="display: inline-block; margin-top: 1rem; color: #3b82f6;">Перейти →</a>
+    </div>
+</div>
 {% endblock %}
