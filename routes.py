@@ -11,7 +11,7 @@ logger = logging.getLogger(__name__)
 
 try:
     producer = KafkaProducer(
-        bootstrap_servers='155.212.165.190:9092',
+        bootstrap_servers='127.0.0.1:9092'
         value_serializer=lambda v: json.dumps(v).encode('utf-8')
     )
     logger.info("✅ Kafka producer connected")
