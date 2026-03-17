@@ -7,6 +7,11 @@ from models import db, Project, Visit, Setting, KafkaTopicStat
 from flask import render_template, request, redirect, url_for, flash, jsonify
 from datetime import datetime, timedelta
 import time
+import os
+
+# Конфигурация из переменных окружения
+DATABASE_URL = os.getenv('DATABASE_URL', 'postgresql://igor:password@localhost/devopsdb')
+KAFKA_BOOTSTRAP_SERVERS = os.getenv('KAFKA_BOOTSTRAP_SERVERS', 'localhost:9092')
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
