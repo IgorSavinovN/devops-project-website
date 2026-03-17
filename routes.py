@@ -148,7 +148,7 @@ def init_routes(app, db, Project, Visit, Setting):
         """Главная страница управления Kafka"""
         try:
             admin_client = KafkaAdminClient(
-                bootstrap_servers='155.212.165.190:9092',
+                bootstrap_servers='127.0.0.1:9092',
                 client_id='devops-admin'
             )
             topics = admin_client.list_topics()
@@ -211,7 +211,7 @@ def init_routes(app, db, Project, Visit, Setting):
 
         try:
             admin_client = KafkaAdminClient(
-                bootstrap_servers='155.212.165.190:9092',
+                bootstrap_servers='127.0.0.1:9092',
                 client_id='devops-admin'
             )
 
