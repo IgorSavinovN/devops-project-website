@@ -1,4 +1,4 @@
-from kafka import KafkaProducer
+from kafka import KafkaProducer, KafkaConsumer
 import json
 import logging
 from kafka.admin import KafkaAdminClient, NewTopic
