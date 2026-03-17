@@ -1,5 +1,0 @@
-@app.route('/')
-def home():
-    return render_template('index.html', 
-                          message="Привет, DevOps-инженер!",
-                          time=datetime.datetime.now())
