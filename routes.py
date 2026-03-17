@@ -3,6 +3,7 @@ import json
 import logging
 from kafka.admin import KafkaAdminClient, NewTopic
 from kafka.errors import TopicAlreadyExistsError, NoBrokersAvailable
+from models import db, Project, Visit, Setting, KafkaTopicStat
 import time
 
 logging.basicConfig(level=logging.INFO)
