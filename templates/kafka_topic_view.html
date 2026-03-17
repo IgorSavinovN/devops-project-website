@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+
+{% block title %}Топик {{ topic }}{% endblock %}
+
+{% block content %}
+<h1>📋 Топик: {{ topic }}</h1>
+
+<div class="card" style="margin-bottom: 2rem;">
+    <div style="display: flex; gap: 2rem;">
+        <div>
+            <p style="color: #64748b; margin: 0;">Партиции</p>
+            <p style="font-size: 2rem; font-weight: bold; margin: 0;">{{ partitions | length if partitions else 0 }}</p>
+        </div>
+        <div>
+            <p style="color: #64748b; margin: 0;">Показано сообщений</p>
+            <p style="font-size: 2rem; font-weight: bold; margin: 0;">{{ messages | length }}</p>
+        </div>
+    </div>
+    <p style="margin-top: 1rem;">
+        <a href="/kafka/send-message?topic={{ topic }}" class="button" style="background: #10b981; color: white; text-decoration: none; padding: 0.5rem 1rem; border-radius: 6px;">✏️ Отправить в этот топик</a>
+        <a href="/kafka" class="button" style="background: #64748b; color: white; text-decoration: none; padding: 0.5rem 1rem; border-radius: 6px; margin-left: 0.5rem;">← Назад</a>
+    </p>
+</div>
+
+<div class="card-grid">
+    {% for msg in messages %}
+    <div class="card">
+        <div style="display: flex; gap: 1rem; margin-bottom: 1rem; color: #64748b; font-size: 0.9rem;">
+            <span>Партиция: <strong>{{ msg.partition }}</strong></span>
+            <span>Оффсет: <strong>{{ msg.offset }}</strong></span>
+            {% if msg.key %}
+            <span>Ключ: <strong>{{ msg.key }}</strong></span>
+            {% endif %}
+        </div>
+        <pre style="background: #1e293b; color: #fff; padding: 1rem; border-radius: 8px; overflow-x: auto; margin: 0;">{{ msg.value | tojson(indent=2) if msg.value is mapping else msg.value }}</pre>
+    </div>
+    {% endfor %}
+</div>
+{% endblock %}
