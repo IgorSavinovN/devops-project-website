@@ -4,22 +4,27 @@ import logging
 from kafka.admin import KafkaAdminClient, NewTopic
 from kafka.errors import TopicAlreadyExistsError, NoBrokersAvailable
 from models import db, Project, Visit, Setting, KafkaTopicStat
+from flask import render_template, request, redirect, url_for, flash, jsonify
+from datetime import datetime, timedelta
 import time
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
+# Единый адрес Kafka (localhost внутри сервера)
+KAFKA_BROKER = '127.0.0.1:9092'
+
+# Глобальный продюсер
 try:
     producer = KafkaProducer(
-        bootstrap_servers='127.0.0.1:9092'
+        bootstrap_servers=KAFKA_BROKER,
         value_serializer=lambda v: json.dumps(v).encode('utf-8')
     )
     logger.info("✅ Kafka producer connected")
 except Exception as e:
     logger.error(f"❌ Kafka producer failed: {e}")
     producer = None
-from flask import render_template, request, redirect, url_for, flash, jsonify
-from datetime import datetime, timedelta
+
 
 def init_routes(app, db, Project, Visit, Setting):
 
@@ -90,16 +95,21 @@ def init_routes(app, db, Project, Visit, Setting):
         except:
             pg_status = False
 
-        # Проверка Kafka (заглушка, пока не подключена)
+        # Проверка Kafka
         try:
-            from kafka import KafkaProducer
-            producer = KafkaProducer(bootstrap_servers='localhost:9092')
-            producer.close()
+            test_producer = KafkaProducer(bootstrap_servers=KAFKA_BROKER)
+            test_producer.close()
             kafka_status = True
         except:
             kafka_status = False
 
-        return render_template('status.html', pg_status=pg_status, kafka_status=kafka_status)
+        # Статистика Kafka из БД
+        kafka_stat = KafkaTopicStat.query.first()
+
+        return render_template('status.html',
+                               pg_status=pg_status,
+                               kafka_status=kafka_status,
+                               kafka_stat=kafka_stat)
 
     @app.route('/add', methods=['POST'])
     def add_project():
@@ -124,6 +134,7 @@ def init_routes(app, db, Project, Visit, Setting):
 
     @app.route('/send-event')
     def send_event():
+        global producer
         if not producer:
             return "Kafka producer not available", 500
 
@@ -148,7 +159,7 @@ def init_routes(app, db, Project, Visit, Setting):
         """Главная страница управления Kafka"""
         try:
             admin_client = KafkaAdminClient(
-                bootstrap_servers='127.0.0.1:9092',
+                bootstrap_servers=KAFKA_BROKER,
                 client_id='devops-admin'
             )
             topics = admin_client.list_topics()
@@ -166,7 +177,7 @@ def init_routes(app, db, Project, Visit, Setting):
                 try:
                     consumer = KafkaConsumer(
                         topic,
-                        bootstrap_servers='155.212.165.190:9092',
+                        bootstrap_servers=KAFKA_BROKER,
                         consumer_timeout_ms=1000
                     )
                     partitions = consumer.partitions_for_topic(topic)
@@ -192,7 +203,7 @@ def init_routes(app, db, Project, Visit, Setting):
 
             return render_template('kafka_dashboard.html',
                                    topics=topics_detail,
-                                   kafka_status=kafka_status)
+                                   kafka_status=bool(producer))
         except NoBrokersAvailable:
             return render_template('kafka_dashboard.html',
                                    error="Kafka broker not available",
@@ -211,7 +222,7 @@ def init_routes(app, db, Project, Visit, Setting):
 
         try:
             admin_client = KafkaAdminClient(
-                bootstrap_servers='127.0.0.1:9092',
+                bootstrap_servers=KAFKA_BROKER,
                 client_id='devops-admin'
             )
 
@@ -244,9 +255,8 @@ def init_routes(app, db, Project, Visit, Setting):
             return redirect(url_for('kafka_dashboard'))
 
         try:
-            from kafka import KafkaProducer
-            producer = KafkaProducer(
-                bootstrap_servers='155.212.165.190:9092',
+            msg_producer = KafkaProducer(
+                bootstrap_servers=KAFKA_BROKER,
                 value_serializer=lambda v: json.dumps(v).encode('utf-8'),
                 key_serializer=lambda v: v.encode('utf-8') if v else None
             )
@@ -257,7 +267,7 @@ def init_routes(app, db, Project, Visit, Setting):
             except:
                 msg_value = message
 
-            future = producer.send(
+            future = msg_producer.send(
                 topic,
                 value=msg_value,
                 key=key.encode('utf-8') if key else None
@@ -277,7 +287,7 @@ def init_routes(app, db, Project, Visit, Setting):
                 db.session.add(stat)
             db.session.commit()
 
-            producer.close()
+            msg_producer.close()
             flash(f"✅ Сообщение отправлено в топик '{topic}' (партиция {result.partition})", 'success')
         except Exception as e:
             flash(f"❌ Ошибка: {str(e)}", 'error')
@@ -293,7 +303,7 @@ def init_routes(app, db, Project, Visit, Setting):
         try:
             consumer = KafkaConsumer(
                 topic_name,
-                bootstrap_servers='155.212.165.190:9092',
+                bootstrap_servers=KAFKA_BROKER,
                 auto_offset_reset='earliest',
                 enable_auto_commit=False,
                 consumer_timeout_ms=3000
@@ -336,7 +346,7 @@ def init_routes(app, db, Project, Visit, Setting):
         """Удаление топика"""
         try:
             admin_client = KafkaAdminClient(
-                bootstrap_servers='155.212.165.190:9092',
+                bootstrap_servers=KAFKA_BROKER,
                 client_id='devops-admin'
             )
             admin_client.delete_topics([topic_name])
