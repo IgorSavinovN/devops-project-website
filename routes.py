@@ -16,13 +16,10 @@ KAFKA_BOOTSTRAP_SERVERS = os.getenv('KAFKA_BOOTSTRAP_SERVERS', 'localhost:9092')
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-# Единый адрес Kafka (localhost внутри сервера)
-KAFKA_BROKER = '127.0.0.1:9092'
-
 # Глобальный продюсер
 try:
     producer = KafkaProducer(
-        bootstrap_servers=KAFKA_BROKER,
+        bootstrap_servers=KAFKA_BOOTSTRAP_SERVERS,
         value_serializer=lambda v: json.dumps(v).encode('utf-8')
     )
     logger.info("✅ Kafka producer connected")
@@ -102,7 +99,7 @@ def init_routes(app, db, Project, Visit, Setting):
 
         # Проверка Kafka
         try:
-            test_producer = KafkaProducer(bootstrap_servers=KAFKA_BROKER)
+            test_producer = KafkaProducer(bootstrap_servers=KAFKA_BOOTSTRAP_SERVERS)
             test_producer.close()
             kafka_status = True
         except:
@@ -164,7 +161,7 @@ def init_routes(app, db, Project, Visit, Setting):
         """Главная страница управления Kafka"""
         try:
             admin_client = KafkaAdminClient(
-                bootstrap_servers=KAFKA_BROKER,
+                bootstrap_servers=KAFKA_BOOTSTRAP_SERVERS,
                 client_id='devops-admin'
             )
             topics = admin_client.list_topics()
@@ -182,7 +179,7 @@ def init_routes(app, db, Project, Visit, Setting):
                 try:
                     consumer = KafkaConsumer(
                         topic,
-                        bootstrap_servers=KAFKA_BROKER,
+                        bootstrap_servers=KAFKA_BOOTSTRAP_SERVERS,
                         consumer_timeout_ms=1000
                     )
                     partitions = consumer.partitions_for_topic(topic)
@@ -227,7 +224,7 @@ def init_routes(app, db, Project, Visit, Setting):
 
         try:
             admin_client = KafkaAdminClient(
-                bootstrap_servers=KAFKA_BROKER,
+                bootstrap_servers=KAFKA_BOOTSTRAP_SERVERS,
                 client_id='devops-admin'
             )
 
@@ -261,7 +258,7 @@ def init_routes(app, db, Project, Visit, Setting):
 
         try:
             msg_producer = KafkaProducer(
-                bootstrap_servers=KAFKA_BROKER,
+                bootstrap_servers=KAFKA_BOOTSTRAP_SERVERS,
                 value_serializer=lambda v: json.dumps(v).encode('utf-8'),
                 key_serializer=lambda v: v.encode('utf-8') if v else None
             )
@@ -308,7 +305,7 @@ def init_routes(app, db, Project, Visit, Setting):
         try:
             consumer = KafkaConsumer(
                 topic_name,
-                bootstrap_servers=KAFKA_BROKER,
+                bootstrap_servers=KAFKA_BOOTSTRAP_SERVERS,
                 auto_offset_reset='earliest',
                 enable_auto_commit=False,
                 consumer_timeout_ms=3000
@@ -351,7 +348,7 @@ def init_routes(app, db, Project, Visit, Setting):
         """Удаление топика"""
         try:
             admin_client = KafkaAdminClient(
-                bootstrap_servers=KAFKA_BROKER,
+                bootstrap_servers=KAFKA_BOOTSTRAP_SERVERS,
                 client_id='devops-admin'
             )
             admin_client.delete_topics([topic_name])

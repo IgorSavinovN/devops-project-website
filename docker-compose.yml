@@ -3,14 +3,14 @@ version: '3.8'
 services:
   postgres:
     image: postgres:15
-    container_name: devops_postgres
+    container_name: devops_postgres_staging
     restart: unless-stopped
     environment:
       POSTGRES_USER: igor
       POSTGRES_PASSWORD: password
       POSTGRES_DB: devopsdb
-    ports:
-      - "5432:5432"
+    # ports:        # Не пробрасываем порты наружу, чтобы не конфликтовать с хостовой БД
+    #   - "5433:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
     healthcheck:
@@ -21,26 +21,25 @@ services:
 
   zookeeper:
     image: confluentinc/cp-zookeeper:7.4.0
-    container_name: devops_zookeeper
+    container_name: devops_zookeeper_staging
     restart: unless-stopped
     environment:
       ZOOKEEPER_CLIENT_PORT: 2181
       ZOOKEEPER_TICK_TIME: 2000
-    ports:
-      - "2181:2181"
+    # ports: [ "2181:2181" ]  # тоже не обязательно наружу
 
   kafka:
     image: confluentinc/cp-kafka:7.4.0
-    container_name: devops_kafka
+    container_name: devops_kafka_staging
     restart: unless-stopped
     depends_on:
       - zookeeper
-    ports:
-      - "9092:9092"
+    # ports:          # Не пробрасываем наружу
+    #   - "9093:9092"
     environment:
       KAFKA_BROKER_ID: 1
       KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
-      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://localhost:9092
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092   # внутри сети доступно по имени kafka:9092
       KAFKA_LISTENERS: PLAINTEXT://0.0.0.0:9092
       KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
     healthcheck:
@@ -51,7 +50,7 @@ services:
 
   flask-app:
     build: .
-    container_name: devops_flask
+    container_name: devops_flask_staging
     restart: unless-stopped
     depends_on:
       postgres:
@@ -59,12 +58,12 @@ services:
       kafka:
         condition: service_healthy
     ports:
-      - "8000:8000"
+      - "8001:8000"          # staging доступен на порту 8001
     environment:
       DATABASE_URL: postgresql://igor:password@postgres:5432/devopsdb
       KAFKA_BOOTSTRAP_SERVERS: kafka:9092
     volumes:
-      - ./:/app  # для разработки (можно убрать в продакшене)
+      - ./:/app   # для разработки (можно убрать в стабильной версии)
 
 volumes:
   postgres_data:

@@ -6,6 +6,8 @@ from models import db, Project, Visit, Setting
 from routes import init_routes
 import os
 
+# Если переменная DATABASE_URL не задана, используем старую строку (localhost)
+app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv('DATABASE_URL', 'postgresql://igor:password@localhost/devopsdb')
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'super-secret-key-change-me'
 app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://igor:password@localhost/devopsdb'
