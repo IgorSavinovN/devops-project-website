@@ -1,10 +1,16 @@
-from models import db, Project, Visit, Setting, KafkaTopicStat
+cd ~/devops-project-website
+
+# Переключаемся на ветку docker-test
+git checkout docker-test
+
+# Создаём новый routes.py без Kafka
+cat > routes.py << 'EOF'
+from models import db, Project, Visit, Setting
 from flask import render_template, request, redirect, url_for, flash, jsonify
 from datetime import datetime, timedelta
 import os
 import logging
 
-# Конфигурация из переменных окружения
 DATABASE_URL = os.getenv('DATABASE_URL', 'postgresql://igor:password@localhost/devopsdb')
 
 logging.basicConfig(level=logging.INFO)
@@ -73,20 +79,15 @@ def init_routes(app, db, Project, Visit, Setting):
 
     @app.route('/status')
     def status():
-        # Проверка PostgreSQL
         try:
             db.session.execute('SELECT 1')
             pg_status = True
         except:
             pg_status = False
 
-        # Статистика Kafka из БД (оставляем для совместимости, но Kafka не используется)
-        kafka_stat = KafkaTopicStat.query.first()
-
         return render_template('status.html',
                                pg_status=pg_status,
-                               kafka_status=False,  # Kafka отключена
-                               kafka_stat=kafka_stat)
+                               kafka_status=False)
 
     @app.route('/add', methods=['POST'])
     def add_project():
@@ -108,3 +109,12 @@ def init_routes(app, db, Project, Visit, Setting):
         db.session.commit()
         flash('Проект удалён', 'success')
         return redirect(url_for('projects'))
+EOF
+
+# Убираем kafka-python из requirements.txt
+sed -i '/kafka/d' requirements.txt
+
+# Коммитим изменения в ветку docker-test
+git add routes.py requirements.txt
+git commit -m "remove kafka from staging branch"
+git push origin docker-test
