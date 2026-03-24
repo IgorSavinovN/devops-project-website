@@ -1,8 +1,8 @@
-name: Deploy to Server
+name: Deploy Staging to Server
 
 on:
   push:
-    branches: [ main ]
+    branches: [ staging ]
 
 jobs:
   deploy:
@@ -11,7 +11,7 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v3
       
-    - name: Deploy to server
+    - name: Deploy staging to server
       uses: appleboy/ssh-action@v1.0.0
       with:
         host: 155.212.165.190
@@ -20,8 +20,8 @@ jobs:
         script: |
           cd ~/devops-project-website
           git fetch origin
-          git reset --hard origin/main
-          git clean -fd
+          git checkout staging || git checkout -b staging
+          git pull origin staging
           source venv/bin/activate
           pip install -r requirements.txt
           sudo systemctl restart gunicorn
