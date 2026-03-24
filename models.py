@@ -24,7 +24,6 @@ class Setting(db.Model):
     key = db.Column(db.String(50), unique=True)
     value = db.Column(db.String(200))
 
-class KafkaTopicStat(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     topic_name = db.Column(db.String(100), unique=True)
     partition_count = db.Column(db.Integer, default=1)
