@@ -23,3 +23,10 @@ class Setting(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     key = db.Column(db.String(50), unique=True)
     value = db.Column(db.String(200))
+
+class KafkaTopicStat(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    topic_name = db.Column(db.String(100), unique=True)
+    partition_count = db.Column(db.Integer, default=1)
+    message_count = db.Column(db.Integer, default=0)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
