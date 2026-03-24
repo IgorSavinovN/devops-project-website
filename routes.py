@@ -71,5 +71,5 @@ def init_routes(app, db, Project, Visit, Setting):
         project = Project.query.get_or_404(id)
         db.session.delete(project)
         db.session.commit()
+
         flash('Проект удалён', 'success')
-        return redirect(url_for('projects'))
