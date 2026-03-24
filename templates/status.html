@@ -15,47 +15,5 @@
             <span class="status-badge down">❌ Недоступна</span>
         {% endif %}
     </div>
-
-    <div class="card">
-        <h2 style="margin-bottom: 1rem;">📦 Kafka</h2>
-        <p style="color: #64748b;">Готова к подключению:</p>
-        {% if kafka_status %}
-            <span class="status-badge up">✅ Готова</span>
-        {% else %}
-            <span class="status-badge down">⏳ Ожидает</span>
-        {% endif %}
-    </div>
-
-    <div class="card">
-        <h2 style="margin-bottom: 1rem;">⚙️ Настройка Kafka</h2>
-        <p style="color: #64748b;">Пример подключения (Python):</p>
-        <pre style="background: #1e293b; color: #fff; padding: 1rem; border-radius: 12px; margin-top: 1rem; overflow-x: auto;">
-from kafka import KafkaProducer
-
-producer = KafkaProducer(
-    bootstrap_servers='localhost:9092'
-)</pre>
-    </div>
-</div>
-
-<!-- НОВЫЙ БЛОК: Статистика Kafka и кнопки -->
-<div class="card" style="margin-top: 2rem;">
-    <h2 style="margin-bottom: 1rem;">📊 Статистика Kafka</h2>
-
-    <div style="display: flex; gap: 2rem; flex-wrap: wrap; margin-bottom: 1.5rem;">
-        <div>
-            <p style="color: #64748b; margin-bottom: 0.5rem;">Отправлено событий</p>
-            <p style="font-size: 2rem; font-weight: bold;">{{ kafka_stat.event_count if kafka_stat else 0 }}</p>
-        </div>
-        <div>
-            <p style="color: #64748b; margin-bottom: 0.5rem;">Последнее событие</p>
-            <p style="font-size: 1.2rem;">{{ kafka_stat.last_event_at.strftime('%Y-%m-%d %H:%M:%S') if kafka_stat and kafka_stat.last_event_at else '—' }}</p>
-        </div>
-    </div>
-
-    <div style="display: flex; gap: 1rem; flex-wrap: wrap;">
-        <a href="/send-event" target="_blank" style="display: inline-block; padding: 0.75rem 1.5rem; background: #3b82f6; color: white; text-decoration: none; border-radius: 8px; font-weight: 500;">📤 Отправить тестовое событие</a>
-        <a href="/kafka-events" style="display: inline-block; padding: 0.75rem 1.5rem; background: #10b981; color: white; text-decoration: none; border-radius: 8px; font-weight: 500;">📨 Просмотреть события</a>
-    </div>
 </div>
 {% endblock %}
