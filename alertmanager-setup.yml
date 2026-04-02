@@ -1,0 +1,30 @@
+---
+- name: Setup Alertmanager
+  hosts: all
+  become: yes
+  tasks:
+    - name: Install Alertmanager
+      apt:
+        name: prometheus-alertmanager
+        state: present
+      when: ansible_os_family == "Debian"
+
+    - name: Ensure Alertmanager config directory exists
+      file:
+        path: /etc/prometheus
+        state: directory
+        owner: prometheus
+        group: prometheus
+        mode: '0755'
+
+    - name: Ensure Alertmanager is running
+      systemd:
+        name: alertmanager
+        state: started
+        enabled: yes
+
+  handlers:
+    - name: restart alertmanager
+      systemd:
+        name: alertmanager
+        state: restarte

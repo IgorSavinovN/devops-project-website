@@ -1,0 +1,127 @@
+
+
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
+
+
+
+def init_routes(app, db, Project, Visit, Setting):
+
+    @app.route('/')
+    def home():
+
+        return render_template('index.html')
+
+    @app.route('/projects')
+    def projects():
+        projects = Project.query.order_by(Project.created_at.desc()).all()
+        return render_template('projects.html', projects=projects)
+
+    @app.route('/about')
+    def about():
+        return render_template('about.html')
+
+    @app.route('/contact')
+    def contact():
+        return render_template('contact.html')
+
+    @app.route('/stats')
+    def stats():
+        total_projects = Project.query.count()
+        done_projects = Project.query.filter_by(status='done').count()
+        pending = Project.query.filter_by(status='pending').count()
+        in_progress = Project.query.filter_by(status='in_progress').count()
+        today = datetime.utcnow().replace(hour=0, minute=0, second=0)
+        today_visits = Visit.query.filter(Visit.timestamp >= today).count()
+        return render_template('stats.html',
+                               total=total_projects,
+                               done=done_projects,
+                               pending=pending,
+                               in_progress=in_progress,
+                               today_visits=today_visits)
+
+    @app.route('/status')
+    def status():
+
+        try:
+            db.session.execute('SELECT 1')
+            pg_status = True
+        except:
+            pg_status = False
+
+
+    @app.route('/add', methods=['POST'])
+    def add_project():
+        project = Project(
+            title=request.form['title'],
+            description=request.form.get('description', ''),
+            priority=request.form.get('priority', 'medium'),
+            status=request.form.get('status', 'pending')
+        )
+        db.session.add(project)
+        db.session.commit()
+        flash('Проект добавлен', 'success')
+        return redirect(url_for('projects'))
+
+    @app.route('/delete/<int:id>')
+    def delete_project(id):
+        project = Project.query.get_or_404(id)
+        db.session.delete(project)
+        db.session.commit()
+        flash('Проект удалён', 'success')
+client_id='devops-admin'
+            )
+            topics = admin_client.list_topics()
+            admin_client.close()
+
+            # Получаем статистику из БД
+            topic_stats = {stat.topic_name: stat for stat in KafkaTopicStat.query.all()}
+
+            # Получаем детальную информацию о каждом топике
+            topics_detail = []
+            from kafka import KafkaConsumer
+            for topic in sorted(topics):
+                if topic.startswith('_'):  # пропускаем внутренние топики
+                    continue
+                try:
+                    consumer = KafkaConsumer(
+                        topic,
+                        bootstrap_servers=KAFKA_BOOTSTRAP_SERVERS,
+                        consumer_timeout_ms=1000
+                    )
+                    partitions = consumer.partitions_for_topic(topic)
+                    # Получаем последние сообщения
+                    consumer.seek_to_end()
+                    end_offsets = consumer.end_offsets(partitions) if partitions else {}
+                    total_messages = sum(end_offsets.values()) if end_offsets else 0
+                    consumer.close()
+
+                    topics_detail.append({
+                        'name': topic,
+                        'partitions': len(partitions) if partitions else 0,
+                        'messages': total_messages,
+                        'stat': topic_stats.get(topic)
+                    })
+                except Exception as e:
+                    topics_detail.append({
+                        'name': topic,
+                        'partitions': 0,
+                        'messages': 0,
+                        'error': str(e)
+                    })
+
+            return render_template('kafka_dashboard.html',
+                                   topics=topics_detail,
+                                   kafka_status=bool(producer))
+        except NoBrokersAvailable:
+            return render_template('kafka_dashboard.html',
+                                   error="Kafka broker not available",
+                                   kafka_status=False)
+        except Exception as e:
+            return render_template('kafka_dashboard.html',
+                                   error=str(e),
+                                   kafka_status=False)
+
+
+
+   

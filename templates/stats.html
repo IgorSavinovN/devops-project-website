@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+
+{% block title %}Статистика{% endblock %}
+
+{% block content %}
+<h1>📊 Статистика</h1>
+
+<div class="stats-grid">
+    <div class="stat-card">
+        <h3>Всего проектов</h3>
+        <p style="font-size: 2rem;">{{ total }}</p>
+    </div>
+    <div class="stat-card">
+        <h3>Выполнено</h3>
+        <p style="font-size: 2rem;">{{ done }}</p>
+    </div>
+    <div class="stat-card">
+        <h3>В работе</h3>
+        <p style="font-size: 2rem;">{{ in_progress }}</p>
+    </div>
+    <div class="stat-card">
+        <h3>Посещений сегодня</h3>
+        <p style="font-size: 2rem;">{{ today_visits }}</p>
+    </div>
+</div>
+{% endblock %}

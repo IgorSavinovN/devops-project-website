@@ -1,0 +1,59 @@
+- name: Setup monitoring stack
+  hosts: all
+  become: yes
+
+  tasks:
+    - name: Install Alertmanager
+      apt:
+        name: prometheus-alertmanager
+        state: present
+        update_cache: yes
+
+    - name: Ensure Alertmanager is running
+      systemd:
+        name: prometheus-alertmanager
+        state: started
+        enabled: yes
+
+    - name: Deploy Alertmanager config
+      copy:
+        src: templates/alertmanager.yml.j2
+        dest: /etc/prometheus/alertmanager.yml
+        owner: prometheus
+        group: prometheus
+        mode: '0644'
+      notify: restart alertmanager
+
+    - name: Deploy Prometheus alerts
+      copy:
+        src: templates/alerts.yml.j2
+        dest: /etc/prometheus/alerts.yml
+        owner: prometheus
+        group: prometheus
+        mode: '0644'
+      notify: reload prometheus
+
+    - name: Deploy Loki alerts
+      copy:
+        src: templates/loki-alerts.yml.j2
+        dest: /etc/grafana/provisioning/alerting/loki-alerts.yml
+        owner: root
+        group: grafana
+        mode: '0640'
+      notify: restart grafana
+
+  handlers:
+    - name: restart alertmanager
+      systemd:
+        name: prometheus-alertmanager
+        state: restarted
+
+    - name: reload prometheus
+      systemd:
+        name: prometheus
+        state: reloaded
+
+    - name: restart grafana
+      systemd:
+        name: grafana-server
+        state: restarted

@@ -1,0 +1,19 @@
+- name: Deploy Alertmanager config
+  hosts: all
+  become: yes
+
+  tasks:
+    - name: Deploy alertmanager.yml
+      copy:
+        src: templates/alertmanager.yml.j2
+        dest: /etc/prometheus/alertmanager.yml
+        owner: prometheus
+        group: prometheus
+        mode: '0644'
+      notify: restart alertmanager
+
+  handlers:
+    - name: restart alertmanager
+      systemd:
+        name: prometheus-alertmanager
+        state: restarted

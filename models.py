@@ -1,54 +1,31 @@
-import sqlite3
-import os
+from flask_sqlalchemy import SQLAlchemy
+from datetime import datetime
 
-DATABASE = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'messages.db')
+db = SQLAlchemy()
 
-def get_db():
-    """Подключение к SQLite"""
-    db = sqlite3.connect(DATABASE)
-    db.row_factory = sqlite3.Row
-    return db
+class Project(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    title = db.Column(db.String(100), nullable=False)
+    description = db.Column(db.Text)
+    status = db.Column(db.String(20), default='pending')
+    priority = db.Column(db.String(20), default='medium')
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
 
-def init_db():
-    """Создание таблицы"""
-    db = get_db()
-    db.execute('''
-        CREATE TABLE IF NOT EXISTS messages (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            name TEXT NOT NULL,
-            email TEXT NOT NULL,
-            message TEXT NOT NULL,
-            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-        )
-    ''')
-    db.commit()
-    db.close()
-    print("Database initialized!")
+class Visit(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    ip = db.Column(db.String(45))
+    page = db.Column(db.String(100))
+    user_agent = db.Column(db.String(200))
+    timestamp = db.Column(db.DateTime, default=datetime.utcnow)
 
-def save_message(name, email, message):
-    """Сохранить сообщение"""
-    db = get_db()
-    cur = db.execute(
-        "INSERT INTO messages (name, email, message) VALUES (?, ?, ?)",
-        (name, email, message)
-    )
-    db.commit()
-    message_id = cur.lastrowid
-    db.close()
-    return message_id
+class Setting(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    key = db.Column(db.String(50), unique=True)
+    value = db.Column(db.String(200))
 
-def get_all_messages():
-    """Получить все сообщения"""
-    db = get_db()
-    cur = db.execute("SELECT * FROM messages ORDER BY created_at DESC")
-    messages = cur.fetchall()
-    db.close()
-    return [dict(msg) for msg in messages]
-
-def get_messages_count():
-    """Количество сообщений"""
-    db = get_db()
-    cur = db.execute("SELECT COUNT(*) as count FROM messages")
-    result = cur.fetchone()
-    db.close()
-    return result['count'] if result else 0
+    id = db.Column(db.Integer, primary_key=True)
+    topic_name = db.Column(db.String(100), unique=True)
+    partition_count = db.Column(db.Integer, default=1)
+    message_count = db.Column(db.Integer, default=0)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)

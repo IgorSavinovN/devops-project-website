@@ -1,0 +1,56 @@
+groups:
+  - name: server_alerts
+    rules:
+      - alert: DiskSpaceFull
+        expr: (100 - ((node_filesystem_avail_bytes{mountpoint="/"} * 100) / node_filesystem_size_bytes{mountpoint="/"})) > 1
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "На сервере {{ $labels.instance }} заканчивается место"
+          description: "Диск / заполнен на {{ $value }}%"
+
+      - alert: HighCPUUsage
+        expr: 100 - (avg by (instance) (rate(node_cpu_seconds_total{mode="idle"}[5m])) * 100) > 1
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Высокая загрузка CPU на {{ $labels.instance }}"
+          description: "Загрузка CPU {{ $value }}%"
+
+      - alert: HighDiskIO
+        expr: rate(node_disk_io_time_seconds_total[5m]) > 0.8
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Высокая дисковая нагрузка на {{ $labels.instance }}"
+          description: "Дисковая нагрузка {{ $value }}%"
+
+      - alert: InstanceDown
+        expr: up == 0
+        for: 1m
+        labels:
+          severity: critical
+        annotations:
+          summary: "Сервер {{ $labels.instance }} недоступен"
+          description: "Сервер не отвечает более минуты"
+
+      - alert: LowMemory
+        expr: (node_memory_MemAvailable_bytes / node_memory_MemTotal_bytes) * 100 < 50
+        for: 2m
+        labels:
+          severity: critical
+        annotations:
+          summary: "Мало свободной памяти на {{ $labels.instance }}"
+          description: "Свободно всего {{ $value }}% памяти"
+
+      - alert: TooManyProcesses
+        expr: count(node_procs_running) > 500
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Много процессов на {{ $labels.instance }}"
+          description: "Количество процессов: {{ $value }}"

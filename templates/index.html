@@ -1,18 +1,26 @@
-{% extends "layout.html" %}
+{% extends "base.html" %}
 
-{% block title %}Главная{% endblock %}
+{% block title %}Статистика — DevOps Project{% endblock %}
 
 {% block content %}
-    <h1>{{ message }}</h1>
-    <p>Текущее время на сервере: {{ time }}</p>
+<h1>📊 Статистика</h1>
 
-    <h2>Наш план обучения:</h2>
-    <ol>
-        <li>✅ Linux основы</li>
-        <li>✅ Python приложение</li>
-        <li>⬜ Git и GitHub</li>
-        <li>⬜ Docker контейнеризация</li>
-        <li>⬜ CI/CD автоматизация</li>
-        <li>⬜ Базы данных</li>
-    </ol>
+<div class="stats-grid">
+    <div class="stat-card">
+        <h3>Всего проектов</h3>
+        <p style="font-size: 2rem;">{{ total }}</p>
+    </div>
+    <div class="stat-card">
+        <h3>Выполнено</h3>
+        <p style="font-size: 2rem;">{{ done }}</p>
+    </div>
+    <div class="stat-card">
+        <h3>В работе</h3>
+        <p style="font-size: 2rem;">{{ in_progress }}</p>
+    </div>
+    <div class="stat-card">
+        <h3>Посещений сегодня</h3>
+        <p style="font-size: 2rem;">{{ today_visits }}</p>
+    </div>
+</div>
 {% endblock %}

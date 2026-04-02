@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+
+{% block title %}Статус систем{% endblock %}
+
+{% block content %}
+<h1>🔌 Статус систем</h1>
+
+<div class="card-grid">
+    <div class="card">
+        <h2 style="margin-bottom: 1rem;">🐘 PostgreSQL</h2>
+        <p style="color: #64748b;">Статус базы данных:</p>
+        {% if pg_status %}
+            <span class="status-badge up">✅ Работает</span>
+        {% else %}
+            <span class="status-badge down">❌ Недоступна</span>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

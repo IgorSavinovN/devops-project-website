@@ -1,0 +1,16 @@
+- name: Install Alertmanager
+  hosts: all
+  become: yes
+
+  tasks:
+    - name: Install Alertmanager package
+      apt:
+        name: prometheus-alertmanager
+        state: present
+        update_cache: yes
+
+    - name: Ensure Alertmanager is running
+      systemd:
+        name: prometheus-alertmanager
+        state: started
+        enabled: yes
