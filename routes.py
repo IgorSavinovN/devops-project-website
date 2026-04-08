@@ -104,3 +104,65 @@ def init_routes(app, db, Project, Visit, Setting):
     @app.route('/health')
     def health():
         return jsonify({"status": "ok", "env": os.getenv("ENV", "production")})
+
+    # --- Управление проектами (CRUD) ---
+    @app.route('/projects/manage')
+    def manage_projects():
+        projects = Project.query.order_by(Project.created_at.desc()).all()
+        return render_template('manage_projects.html', projects=projects)
+
+    @app.route('/projects/add', methods=['GET', 'POST'])
+    def add_project_form():
+        if request.method == 'POST':
+            project = Project(
+                title=request.form['title'],
+                description=request.form.get('description', ''),
+                status=request.form.get('status', 'pending'),
+                priority=request.form.get('priority', 'medium')
+            )
+            db.session.add(project)
+            db.session.commit()
+            flash('Проект добавлен', 'success')
+            return redirect(url_for('manage_projects'))
+        return render_template('project_form.html', title='Добавить проект')
+
+    @app.route('/projects/edit/<int:id>', methods=['GET', 'POST'])
+    def edit_project_form(id):
+        project = Project.query.get_or_404(id)
+        if request.method == 'POST':
+            project.title = request.form['title']
+            project.description = request.form.get('description', '')
+            project.status = request.form.get('status', 'pending')
+            project.priority = request.form.get('priority', 'medium')
+            db.session.commit()
+            flash('Проект обновлён', 'success')
+            return redirect(url_for('manage_projects'))
+        return render_template('project_form.html', title='Редактировать проект', project=project)
+
+    @app.route('/projects/delete/<int:id>')
+    def delete_project_form(id):
+        project = Project.query.get_or_404(id)
+        db.session.delete(project)
+        db.session.commit()
+        flash('Проект удалён', 'success')
+        return redirect(url_for('manage_projects'))
+
+    # --- Просмотр посещений ---
+    @app.route('/visits')
+    def list_visits():
+        page = request.args.get('page', 1, type=int)
+        visits = Visit.query.order_by(Visit.timestamp.desc()).paginate(page=page, per_page=20)
+        return render_template('visits.html', visits=visits)
+
+    # --- Статус БД (техническая страница) ---
+    @app.route('/db-status')
+    def db_status():
+        try:
+            db.session.execute('SELECT 1')
+            db_status = '✅ PostgreSQL работает'
+            tables = db.engine.table_names()
+        except Exception as e:
+            db_status = f'❌ Ошибка: {e}'
+            tables = []
+        return render_template('db_status.html', db_status=db_status, tables=tables)
+

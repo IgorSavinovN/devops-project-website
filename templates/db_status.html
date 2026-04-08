@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+
+{% block title %}Статус базы данных{% endblock %}
+
+{% block content %}
+<h1>Статус PostgreSQL</h1>
+
+<div class="card">
+    <p><strong>Состояние:</strong> {{ db_status }}</p>
+    <p><strong>Таблицы в БД:</strong></p>
+    <ul>
+        {% for table in tables %}
+            <li>{{ table }}</li>
+        {% endfor %}
+    </ul>
+</div>
+{% endblock %}

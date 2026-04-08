@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+
+{% block title %}{{ title }}{% endblock %}
+
+{% block content %}
+<h1>{{ title }}</h1>
+
+<form method="POST" class="project-form">
+    <input type="text" name="title" placeholder="Название" value="{{ project.title if project else '' }}" required>
+    <textarea name="description" placeholder="Описание">{{ project.description if project else '' }}</textarea>
+    <select name="status">
+        <option value="pending" {% if project and project.status == 'pending' %}selected{% endif %}>В ожидании</option>
+        <option value="in_progress" {% if project and project.status == 'in_progress' %}selected{% endif %}>В работе</option>
+        <option value="done" {% if project and project.status == 'done' %}selected{% endif %}>Готово</option>
+    </select>
+    <select name="priority">
+        <option value="low" {% if project and project.priority == 'low' %}selected{% endif %}>Низкий</option>
+        <option value="medium" {% if project and project.priority == 'medium' %}selected{% endif %}>Средний</option>
+        <option value="high" {% if project and project.priority == 'high' %}selected{% endif %}>Высокий</option>
+    </select>
+    <button type="submit">Сохранить</button>
+</form>
+
+<a href="{{ url_for('manage_projects') }}">← Назад</a>
+{% endblock %}

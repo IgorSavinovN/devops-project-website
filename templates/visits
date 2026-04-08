@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+
+{% block title %}История посещений{% endblock %}
+
+{% block content %}
+<h1>История посещений</h1>
+
+<div class="card">
+    <table style="width:100%; border-collapse: collapse;">
+        <tr style="background: #eee;">
+            <th>IP</th>
+            <th>Страница</th>
+            <th>User Agent</th>
+            <th>Время</th>
+        </tr>
+        {% for visit in visits.items %}
+        <tr style="border-bottom: 1px solid #ddd;">
+            <td>{{ visit.ip }}</td>
+            <td>{{ visit.page }}</td>
+            <td>{{ visit.user_agent[:50] }}...</td>
+            <td>{{ visit.timestamp.strftime('%Y-%m-%d %H:%M:%S') }}</td>
+        </tr>
+        {% endfor %}
+    </table>
+</div>
+
+<div class="pagination">
+    {% if visits.has_prev %}
+        <a href="{{ url_for('list_visits', page=visits.prev_num) }}">◀ Назад</a>
+    {% endif %}
+    {% if visits.has_next %}
+        <a href="{{ url_for('list_visits', page=visits.next_num) }}">Вперёд ▶</a>
+    {% endif %}
+</div>
+{% endblock %}

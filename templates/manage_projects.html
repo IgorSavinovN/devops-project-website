@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+
+{% block title %}Управление проектами{% endblock %}
+
+{% block content %}
+<h1>Управление проектами</h1>
+
+<a href="{{ url_for('add_project_form') }}" class="button">➕ Добавить проект</a>
+
+<div class="card-grid">
+    {% for p in projects %}
+    <div class="card">
+        <h3>{{ p.title }}</h3>
+        <p>{{ p.description or '—' }}</p>
+        <div>Статус: {{ p.status }}</div>
+        <div>Приоритет: {{ p.priority }}</div>
+        <div>Создан: {{ p.created_at.strftime('%Y-%m-%d %H:%M') }}</div>
+        <div style="margin-top: 1rem;">
+            <a href="{{ url_for('edit_project_form', id=p.id) }}">✏️ Редактировать</a>
+            <a href="{{ url_for('delete_project_form', id=p.id) }}" onclick="return confirm('Удалить?')">🗑️ Удалить</a>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% endblock %}
