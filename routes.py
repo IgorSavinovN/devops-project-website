@@ -1,4 +1,3 @@
-cat > routes.py << 'EOF'
 from flask import render_template, request, redirect, url_for, flash, jsonify
 from datetime import datetime, timedelta
 import os
