@@ -1,0 +1,30 @@
+name: Deploy to Staging
+
+on:
+  push:
+    branches: [ staging ]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Deploy via SSH
+        uses: appleboy/ssh-action@v1
+        with:
+          host: ${{ secrets.SERVER_HOST }}
+          username: ${{ secrets.SERVER_USER }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          script: |
+            cd ~/devops-project-website
+            git fetch origin
+            git reset --hard origin/staging
+            docker build -t flask-staging:latest .
+            docker stop devops_flask_staging || true
+            docker rm devops_flask_staging || true
+            docker run -d --name devops_flask_staging \
+              --network my_network \
+              -p 8001:8000 \
+              -e DATABASE_URL=postgresql://igor:password@devops_postgres_staging/devopsdb \
+              flask-staging:latest
+            sleep 3
+            curl -f http://localhost:8001/ || exit 1
