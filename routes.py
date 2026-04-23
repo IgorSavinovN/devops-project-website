@@ -50,8 +50,28 @@ def init_routes(app, db, Project, Visit, Setting):
     def about():
         return render_template('about.html')
 
-    @app.route('/contact')
+    @app.route('/contact', methods=['GET', 'POST'])
     def contact():
+        if request.method == 'POST':
+            name = request.form.get('name')
+            email = request.form.get('email')
+            message = request.form.get('message')
+
+            if not name or not email or not message:
+                flash('Все поля обязательны для заполнения', 'error')
+                return redirect(url_for('contact'))
+
+            contact = ContactMessage(
+                name=name,
+                email=email,
+                message=message
+            )
+            db.session.add(contact)
+            db.session.commit()
+
+            flash('Сообщение отправлено! Спасибо, ' + name, 'success')
+            return redirect(url_for('contact'))
+
         return render_template('contact.html')
 
     @app.route('/stats')
