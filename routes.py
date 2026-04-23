@@ -1,7 +1,6 @@
 from flask import render_template, request, redirect, url_for, flash, jsonify
 from datetime import datetime, timedelta
 import os
-from models import db, Project, Visit, Setting, ContactMessage
 import logging
 
 DATABASE_URL = os.getenv('DATABASE_URL', 'postgresql://igor:password@localhost/devopsdb')
@@ -51,26 +50,9 @@ def init_routes(app, db, Project, Visit, Setting):
     def about():
         return render_template('about.html')
 
-    @app.route('/contact', methods=['POST'])
-    def submit_contact():
-        name = request.form.get('name')
-        email = request.form.get('email')
-        message = request.form.get('message')
-
-        if not name or not email or not message:
-            flash('Все поля обязательны для заполнения', 'error')
-            return redirect(url_for('contact'))
-
-        contact = ContactMessage(
-            name=name,
-            email=email,
-            message=message
-        )
-        db.session.add(contact)
-        db.session.commit()
-
-        flash('Сообщение отправлено! Спасибо, ' + name, 'success')
-        return redirect(url_for('contact'))
+    @app.route('/contact')
+    def contact():
+        return render_template('contact.html')
 
     @app.route('/stats')
     def stats():
@@ -184,45 +166,3 @@ def init_routes(app, db, Project, Visit, Setting):
             tables = []
         return render_template('db_status.html', db_status=db_status, tables=tables)
 
-
-    @app.route('/contact', methods=['POST'])
-    def submit_contact():
-        name = request.form.get('name')
-        email = request.form.get('email')
-        message = request.form.get('message')
-        
-        if not name or not email or not message:
-            flash('Все поля обязательны для заполнения', 'error')
-            return redirect(url_for('contact'))
-        
-        contact = ContactMessage(
-            name=name,
-            email=email,
-            message=message
-        )
-        db.session.add(contact)
-        db.session.commit()
-        
-        flash('Сообщение отправлено! Спасибо, ' + name, 'success')
-        return redirect(url_for('contact'))
-
-    @app.route('/contact', methods=['POST'])
-    def submit_contact():
-        name = request.form.get('name')
-        email = request.form.get('email')
-        message = request.form.get('message')
-        
-        if not name or not email or not message:
-            flash('Все поля обязательны для заполнения', 'error')
-            return redirect(url_for('contact'))
-        
-        contact = ContactMessage(
-            name=name,
-            email=email,
-            message=message
-        )
-        db.session.add(contact)
-        db.session.commit()
-        
-        flash('Сообщение отправлено! Спасибо, ' + name, 'success')
-        return redirect(url_for('contact'))
