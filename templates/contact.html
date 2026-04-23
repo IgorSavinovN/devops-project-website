@@ -1,22 +1,29 @@
-{% extends "layout.html" %}
-
-{% block title %}Контакты{% endblock %}
+{% extends "base.html" %}
 
 {% block content %}
-<h1>Свяжитесь с нами</h1>
+<h1>📬 Контакты</h1>
 
-<form method="post" action="/contact">
-    <label>Имя:
-        <input type="text" name="name" required>
-    </label>
-    <label>Email:
-        <input type="email" name="email" required>
-    </label>
-    <label>Сообщение:
-        <textarea name="message" rows="5" required></textarea>
-    </label>
-    <button type="submit">Отправить</button>
+{% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+        {% for category, message in messages %}
+            <div class="alert alert-{{ category }}">{{ message }}</div>
+        {% endfor %}
+    {% endif %}
+{% endwith %}
+
+<form method="POST" action="/contact" class="project-form">
+    <input type="text" name="name" placeholder="Ваше имя" required>
+    <input type="email" name="email" placeholder="Ваш Email" required>
+    <textarea name="message" placeholder="Ваше сообщение" rows="5" required></textarea>
+    <button type="submit">✉️ Отправить</button>
 </form>
 
-<p><a href="/">Вернуться на главную</a></p>
+<div class="projects">
+    <div class="card">
+        <h3>Или напишите нам напрямую</h3>
+        <p>Email: support@devops-project.local</p>
+        <p>Telegram: @devops_support</p>
+        <p>GitHub: github.com/devops-project</p>
+    </div>
+</div>
 {% endblock %}

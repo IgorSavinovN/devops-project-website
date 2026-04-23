@@ -77,7 +77,8 @@ def init_routes(app, db, Project, Visit, Setting):
         except:
             pg_status = False
 
-        return render_template('status.html', pg_status=pg_status)
+        return render_template('status.html',
+                               pg_status=pg_status)
 
     @app.route('/add', methods=['POST'])
     def add_project():
@@ -102,8 +103,9 @@ def init_routes(app, db, Project, Visit, Setting):
 
     @app.route('/health')
     def health():
-        return jsonify({"status": "ok"})
+        return jsonify({"status": "ok", "env": os.getenv("ENV", "production")})
 
+    # --- Управление проектами (CRUD) ---
     @app.route('/projects/manage')
     def manage_projects():
         projects = Project.query.order_by(Project.created_at.desc()).all()
@@ -145,12 +147,14 @@ def init_routes(app, db, Project, Visit, Setting):
         flash('Проект удалён', 'success')
         return redirect(url_for('manage_projects'))
 
-    @app.route('/visits')
+    # --- Просмотр посещений ---
+    @app.route('/visits.html')
     def list_visits():
         page = request.args.get('page', 1, type=int)
         visits = Visit.query.order_by(Visit.timestamp.desc()).paginate(page=page, per_page=20)
-        return render_template('visits.html', visits=visits)
+        return render_template('visits.html.html', visits=visits)
 
+    # --- Статус БД (техническая страница) ---
     @app.route('/db-status')
     def db_status():
         try:
@@ -161,4 +165,4 @@ def init_routes(app, db, Project, Visit, Setting):
             db_status = f'❌ Ошибка: {e}'
             tables = []
         return render_template('db_status.html', db_status=db_status, tables=tables)
-EOF
+
