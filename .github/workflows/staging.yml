@@ -26,5 +26,6 @@ jobs:
               -p 8001:8000 \
               -e DATABASE_URL=postgresql://igor:password@devops_postgres_staging/devopsdb \
               flask-staging:latest
-            sleep 3
+            sleep 5
+            docker exec devops_flask_staging python3 -c "from app import app; from models import db; app.app_context().push(); db.create_all()"
             curl -f http://localhost:8001/ || exit 1
