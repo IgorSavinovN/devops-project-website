@@ -1,4 +1,5 @@
 from flask import render_template, request, redirect, url_for, flash, jsonify
+from models import db, Project, Visit, Setting, ContactMessage
 from datetime import datetime, timedelta
 import os
 import logging

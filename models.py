@@ -37,8 +37,7 @@ class ContactMessage(db.Model):
     name = db.Column(db.String(100), nullable=False)
     email = db.Column(db.String(100), nullable=False)
     message = db.Column(db.Text, nullable=False)
-    created_at = db.Column(db.DateTime, default=datetime.utcnow)
-
+    created_at = db.Column(db.DateTime, server_default=db.func.now())
     def __repr__(self):
         return f'<ContactMessage {self.name} - {self.email}>'
 
