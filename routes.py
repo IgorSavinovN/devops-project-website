@@ -190,7 +190,7 @@ def init_routes(app, db, Project, Visit, Setting):
     def list_visits():
         page = request.args.get('page', 1, type=int)
         visits = Visit.query.order_by(Visit.timestamp.desc()).paginate(page=page, per_page=20)
-        return render_template('visits.html.html', visits=visits)
+        return render_template('visits.html', visits=visits)
 
     # --- Статус БД (техническая страница) ---
     @app.route('/db-status')
