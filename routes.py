@@ -3,6 +3,8 @@ from models import db, Project, Visit, Setting, ContactMessage
 from datetime import datetime, timedelta
 import os
 import logging
+from flask_mail import Message
+from flask import current_app
 
 DATABASE_URL = os.getenv('DATABASE_URL', 'postgresql://igor:password@localhost/devopsdb')
 
@@ -69,6 +71,18 @@ def init_routes(app, db, Project, Visit, Setting):
             )
             db.session.add(contact)
             db.session.commit()
+
+            # Отправка email
+            try:
+                msg = Message(
+                    subject='Новое сообщение с сайта',
+                    recipients=['ikix46@gmail.com'],
+                    body=f'Имя: {name}\nEmail: {email}\nСообщение: {message}'
+                )
+                current_app.extensions['mail'].send(msg)
+                logger.info(f'Email отправлен')
+            except Exception as e:
+                logger.error(f'Ошибка отправки email: {e}')
 
             flash('Сообщение отправлено! Спасибо, ' + name, 'success')
             return redirect(url_for('contact'))
@@ -168,7 +182,10 @@ def init_routes(app, db, Project, Visit, Setting):
         flash('Проект удалён', 'success')
         return redirect(url_for('manage_projects'))
 
-    # --- Просмотр посещений ---
+    # --- Просмотр посещений ---@app.route('/admin/messages')
+    # def admin_messages():
+    #     messages = ContactMessage.query.order_by(ContactMessage.created_at.desc()).all()
+    #     return render_template('admin_messages.html', messages=messages)
     @app.route('/visits.html')
     def list_visits():
         page = request.args.get('page', 1, type=int)
@@ -186,4 +203,5 @@ def init_routes(app, db, Project, Visit, Setting):
             db_status = f'❌ Ошибка: {e}'
             tables = []
         return render_template('db_status.html', db_status=db_status, tables=tables)
+
 
