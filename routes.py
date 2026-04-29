@@ -186,7 +186,7 @@ def init_routes(app, db, Project, Visit, Setting):
     # def admin_messages():
     #     messages = ContactMessage.query.order_by(ContactMessage.created_at.desc()).all()
     #     return render_template('admin_messages.html', messages=messages)
-    @app.route('/visits.html')
+    @app.route('/visits')
     def list_visits():
         page = request.args.get('page', 1, type=int)
         visits = Visit.query.order_by(Visit.timestamp.desc()).paginate(page=page, per_page=20)
