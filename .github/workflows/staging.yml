@@ -26,6 +26,8 @@ jobs:
               --network my_network \
               -p 8001:8000 \
               -e DATABASE_URL=postgresql://igor:password@devops_postgres_staging/devopsdb \
+              -e MAIL_USERNAME=${{ secrets.MAIL_USERNAME }} \
+              -e MAIL_PASSWORD=${{ secrets.MAIL_PASSWORD }} \
               flask-staging:latest
             sleep 5
             docker exec devops_flask_staging python3 -c "from app import app; from models import db; app.app_context().push(); db.create_all()"
