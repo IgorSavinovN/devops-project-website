@@ -1,0 +1,34 @@
+# Параметры, которые можно менять при установке
+namespace: staging
+
+image:
+  repository: flask-app-k8s
+  tag: latest
+  pullPolicy: IfNotPresent
+
+replicaCount: 2
+
+flask:
+  env: staging
+  port: 8000
+
+database:
+  url: "postgresql://igor:password@postgres-service:5432/devopsdb"
+
+mail:
+  username: "ikix46@gmail.com"
+  password: "lwvazkncvvktuuye"
+
+postgres:
+  image: postgres:14
+  user: igor
+  password: password
+  db: devopsdb
+
+ingress:
+  enabled: true
+  host: "k8s.155.212.165.190.sslip.io"
+
+service:
+  port: 80
+  targetPort: 8000

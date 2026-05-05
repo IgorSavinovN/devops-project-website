@@ -1,0 +1,9 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: flask-config
+  namespace: {{ .Values.namespace }}
+data:
+  DATABASE_URL: "{{ .Values.database.url }}"
+  FLASK_ENV: "{{ .Values.flask.env }}"
+  PYTHONUNBUFFERED: "1"
