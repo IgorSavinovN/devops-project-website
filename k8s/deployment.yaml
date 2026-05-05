@@ -36,16 +36,16 @@ spec:
             name: flask-secret
         readinessProbe:
           httpGet:
-            path: /
+            path: /health
             port: 8000
           initialDelaySeconds: 10
           periodSeconds: 5
           failureThreshold: 3
         livenessProbe:
           httpGet:
-            path: /
+            path: /health
             port: 8000
-          initialDelaySeconds: 15
+          initialDelaySeconds: 30
           periodSeconds: 10
           failureThreshold: 3
         resources:
