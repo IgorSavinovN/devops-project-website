@@ -3,12 +3,9 @@ kind: Ingress
 metadata:
   name: flask-ingress
   namespace: staging
-  annotations:
-    nginx.ingress.kubernetes.io/rewrite-target: /
 spec:
-  ingressClassName: nginx
   rules:
-  - host: staging.devops-project.local
+  - host: k8sikix46.fvds.sslip.io
     http:
       paths:
       - path: /
