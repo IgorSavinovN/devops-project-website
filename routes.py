@@ -138,7 +138,11 @@ def init_routes(app, db, Project, Visit, Setting):
 
     @app.route('/health')
     def health():
-        return jsonify({"status": "ok", "env": os.getenv("ENV", "production")})
+        try:
+            db.session.execute(db.text('SELECT 1'))
+            return jsonify({'status': 'ok', 'database': 'connected'}), 200
+        except Exception as e:
+            return jsonify({'status': 'error', 'database': str(e)}), 503
 
     # --- Управление проектами (CRUD) ---
     @app.route('/projects/manage')
@@ -203,12 +207,4 @@ def init_routes(app, db, Project, Visit, Setting):
             db_status = f'❌ Ошибка: {e}'
             tables = []
         return render_template('db_status.html', db_status=db_status, tables=tables)
-
-    @app.route('/health')
-    def health():
-        try:
-            db.session.execute(db.text('SELECT 1'))
-            return jsonify({'status': 'ok', 'database': 'connected'}), 200
-        except Exception as e:
-            return jsonify({'status': 'error', 'database': str(e)}), 503
 
