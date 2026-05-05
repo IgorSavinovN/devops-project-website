@@ -4,6 +4,6 @@ metadata:
   name: flask-config
   namespace: staging
 data:
-  DATABASE_URL: "postgresql://igor:password@postgres-service.staging.svc.cluster.local:5432/devopsdb_k8s"
+  DATABASE_URL: "postgresql://igor:password@postgres-service:5432/devopsdb"
   FLASK_ENV: "staging"
   PYTHONUNBUFFERED: "1"
