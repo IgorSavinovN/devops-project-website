@@ -5,7 +5,7 @@ metadata:
   namespace: staging
 spec:
   rules:
-  - host: k8sikix46.fvds.sslip.io
+  - host: k8s.155.212.165.190.sslip.io
     http:
       paths:
       - path: /
