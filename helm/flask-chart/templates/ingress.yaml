@@ -4,8 +4,6 @@ kind: Ingress
 metadata:
   name: flask-ingress
   namespace: {{ .Values.namespace }}
-  annotations:
-    traefik.ingress.kubernetes.io/router.entrypoints: web
 spec:
   rules:
   - host: {{ .Values.ingress.host }}
