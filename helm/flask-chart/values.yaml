@@ -24,6 +24,7 @@ postgres:
   user: igor
   password: password
   db: devopsdb
+  storage: 1Gi
 
 ingress:
   enabled: true
