@@ -1,5 +1,4 @@
-# staging deployment workflow
-name: Deploy to Staging
+name: Deploy to Staging (K8s)
 
 on:
   push:
@@ -19,16 +18,22 @@ jobs:
             cd ~/devops-project-website
             git fetch origin
             git reset --hard origin/staging
-            docker build -t flask-staging:latest .
-            docker stop devops_flask_staging || true
-            docker rm devops_flask_staging || true
-            docker run -d --name devops_flask_staging \
-              --network my_network \
-              -p 8001:8000 \
-              -e DATABASE_URL=postgresql://igor:password@devops_postgres_staging/devopsdb \
-              -e MAIL_USERNAME=${{ secrets.MAIL_USERNAME }} \
-              -e MAIL_PASSWORD=${{ secrets.MAIL_PASSWORD }} \
-              flask-staging:latest
-            sleep 5
-            docker exec devops_flask_staging python3 -c "from app import app; from models import db; app.app_context().push(); db.create_all()"
-            curl -f http://localhost:8001/ || exit 1
+            
+            # Собрать образ
+            docker build -t flask-app-k8s:latest .
+            
+            # Загрузить в K3s
+            docker save flask-app-k8s:latest | sudo k3s ctr images import -
+            
+            # Деплой Flask
+            helm upgrade --install flask-app ./helm/flask-chart --namespace staging --create-namespace
+            
+            # Деплой мониторинга
+            helm upgrade --install monitoring ./helm/monitoring-chart --namespace monitoring --create-namespace
+            
+            # Перезапустить поды с новым образом
+            kubectl -n staging rollout restart deployment flask-app
+            
+            # Проверить
+            sleep 10
+            curl -f http://localhost:31927/health || exit 1
