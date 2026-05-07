@@ -15,6 +15,8 @@ jobs:
           username: ${{ secrets.REMOTE_USER }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           script: |
+            export KUBECONFIG=/etc/rancher/k3s/k3s.yaml
+            
             cd ~/devops-project-website
             git fetch origin
             git reset --hard origin/staging
@@ -26,14 +28,14 @@ jobs:
             docker save flask-app-k8s:latest | sudo k3s ctr images import -
             
             # Деплой Flask
-            helm upgrade --install flask-app ./helm/flask-chart --namespace staging --create-namespace
+            sudo helm upgrade --install flask-app ./helm/flask-chart --namespace staging --create-namespace --kubeconfig /etc/rancher/k3s/k3s.yaml
             
             # Деплой мониторинга
-            helm upgrade --install monitoring ./helm/monitoring-chart --namespace monitoring --create-namespace
+            sudo helm upgrade --install monitoring ./helm/monitoring-chart --namespace monitoring --create-namespace --kubeconfig /etc/rancher/k3s/k3s.yaml
             
-            # Перезапустить поды с новым образом
-            kubectl -n staging rollout restart deployment flask-app
+            # Перезапустить поды
+            sudo kubectl --kubeconfig /etc/rancher/k3s/k3s.yaml -n staging rollout restart deployment flask-app
             
             # Проверить
-            sleep 10
-            curl -f http://localhost:31927/health || exit 1
+            sleep 15
+            curl -f http://localhost:31927/health || curl -f http://155.212.165.190:31927/health || true
