@@ -6,6 +6,9 @@ from flask_mail import Mail
 from models import db, Project, Visit, Setting, ContactMessage
 from routes import init_routes
 import os
+import time
+start_time = time.time()
+
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'super-secret-key-change-me'
