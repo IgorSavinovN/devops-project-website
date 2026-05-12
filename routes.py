@@ -215,10 +215,10 @@ def init_routes(app, db, Project, Visit, Setting):
         import os
         uptime = time.time() - os.path.getmtime('/app/app.py')
         return f"""\
-    # HELP app_info Application info
-    # TYPE app_info gauge
-    app_info{{version="1.0.0"}} 1
-    # HELP app_uptime_seconds Application uptime
-    # TYPE app_uptime_seconds gauge
-    app_uptime_seconds {uptime}
-    """, 200, {'Content-Type': 'text/plain'}
+# HELP app_info Application info
+# TYPE app_info gauge
+app_info{{version="1.0.0"}} 1
+# HELP app_uptime_seconds Application uptime
+# TYPE app_uptime_seconds gauge
+app_uptime_seconds {uptime}
+""", 200, {'Content-Type': 'text/plain'}
