@@ -5,6 +5,7 @@ import os
 import logging
 from flask_mail import Message
 from flask import current_app
+import time
 
 DATABASE_URL = os.getenv('DATABASE_URL', 'postgresql://igor:password@localhost/devopsdb')
 
