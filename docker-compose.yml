@@ -16,6 +16,8 @@ services:
       interval: 10s
       timeout: 5s
       retries: 5
+    ports:
+      - "5432:5432"
 
   zookeeper:
     image: confluentinc/cp-zookeeper:7.4.0
@@ -25,15 +27,6 @@ services:
       ZOOKEEPER_CLIENT_PORT: 2181
       ZOOKEEPER_TICK_TIME: 2000
 
-    restart: unless-stopped
-    depends_on:
-      - zookeeper
-    environment:
-    healthcheck:
-      interval: 30s
-      timeout: 10s
-      retries: 5
-
   flask-app:
     build: .
     container_name: devops_flask_staging
@@ -41,13 +34,12 @@ services:
     depends_on:
       postgres:
         condition: service_healthy
-        condition: service_healthy
     ports:
       - "8001:8000"
     environment:
       DATABASE_URL: postgresql://igor:password@postgres:5432/devopsdb
     volumes:
-      - ./:/app   # для разработки (чтобы код обновлялся без пересборки)
+      - ./:/app
 
 volumes:
   postgres_data:

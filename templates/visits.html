@@ -1,35 +1,46 @@
 {% extends "base.html" %}
 
-{% block title %}История посещений{% endblock %}
+{% block title %}Посещения{% endblock %}
 
 {% block content %}
-<h1>История посещений</h1>
+<h1>📊 История посещений</h1>
 
-<div class="card">
-    <table style="width:100%; border-collapse: collapse;">
-        <tr style="background: #eee;">
-            <th>IP</th>
-            <th>Страница</th>
-            <th>User Agent</th>
-            <th>Время</th>
+<table class="table" style="width:100%; border-collapse:collapse; margin-top:20px;">
+    <thead>
+        <tr style="background:#3b82f6; color:white;">
+            <th style="padding:10px; border:1px solid #ddd;">ID</th>
+            <th style="padding:10px; border:1px solid #ddd;">IP</th>
+            <th style="padding:10px; border:1px solid #ddd;">Страница</th>
+            <th style="padding:10px; border:1px solid #ddd;">User-Agent</th>
+            <th style="padding:10px; border:1px solid #ddd;">Время</th>
         </tr>
+    </thead>
+    <tbody>
         {% for visit in visits.items %}
-        <tr style="border-bottom: 1px solid #ddd;">
-            <td>{{ visit.ip }}</td>
-            <td>{{ visit.page }}</td>
-            <td>{{ visit.user_agent[:50] }}...</td>
-            <td>{{ visit.timestamp.strftime('%Y-%m-%d %H:%M:%S') }}</td>
+        <tr>
+            <td style="padding:8px; border:1px solid #ddd;">{{ visit.id }}</td>
+            <td style="padding:8px; border:1px solid #ddd;">{{ visit.ip }}</td>
+            <td style="padding:8px; border:1px solid #ddd;">{{ visit.page }}</td>
+            <td style="padding:8px; border:1px solid #ddd;">{{ visit.user_agent[:50] }}{% if visit.user_agent|length > 50 %}...{% endif %}</td>
+            <td style="padding:8px; border:1px solid #ddd;">{{ visit.timestamp.strftime('%Y-%m-%d %H:%M:%S') }}</td>
+        </tr>
+        {% else %}
+        <tr>
+            <td colspan="5" style="padding:20px; text-align:center;">Нет записей</td>
         </tr>
         {% endfor %}
-    </table>
+    </tbody>
+</table>
+
+<div style="margin-top:20px;">
+    {% if visits.has_prev %}
+        <a href="{{ url_for('list_visits', page=visits.prev_num) }}">← Назад</a>
+    {% endif %}
+    <span>Страница {{ visits.page }} из {{ visits.pages }}</span>
+    {% if visits.has_next %}
+        <a href="{{ url_for('list_visits', page=visits.next_num) }}">Вперёд →</a>
+    {% endif %}
 </div>
 
-<div class="pagination">
-    {% if visits.has_prev %}
-        <a href="{{ url_for('list_visits', page=visits.prev_num) }}">◀ Назад</a>
-    {% endif %}
-    {% if visits.has_next %}
-        <a href="{{ url_for('list_visits', page=visits.next_num) }}">Вперёд ▶</a>
-    {% endif %}
-</div>
+<p style="margin-top:20px;"><a href="/">← На главную</a></p>
 {% endblock %}

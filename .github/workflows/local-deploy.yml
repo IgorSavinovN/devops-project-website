@@ -1,0 +1,26 @@
+name: Локальный деплой
+
+on:
+  push:
+    branches: [ main ]
+
+jobs:
+  build-and-run:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Установка Docker Compose
+        run: |
+          sudo apt-get update
+          sudo apt-get install docker-compose -y
+
+      - name: Запуск проекта
+        run: |
+          docker compose up -d --build
+
+      - name: Проверка статуса
+        run: |
+          docker ps
+          curl --fail http://localhost:8001 || exit 1
