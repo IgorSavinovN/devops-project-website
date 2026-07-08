@@ -1,0 +1,23 @@
+# Общие настройки
+appName: flask-app-helm
+replicaCount: 1
+
+# Настройки образа
+image:
+  repository: devops-project-website-flask-app
+  tag: latest
+  pullPolicy: Never
+
+# Настройки сервиса
+service:
+  type: NodePort
+  port: 8000
+  targetPort: 8000
+
+# Подключение к БД (используем существующий сервис postgres-service)
+databaseUrl: postgresql://igor:password@postgres-service:5432/devopsdb
+
+ingress:
+  enabled: true
+  host: flask-helm.local
+  annotations: {}
